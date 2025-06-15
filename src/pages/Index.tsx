@@ -1,21 +1,20 @@
-
 import React, { useState, useEffect } from 'react';
-import { Upload, FileText, Brain, MessageSquare, BookOpen, Clock, BarChart3, X } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Upload, BookOpen, Clock, BarChart3, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import FileUploadZone from '@/components/FileUploadZone';
+import { Link } from 'react-router-dom';
 import QuizApp from '@/components/QuizApp';
 import MockExamApp from '@/components/MockExamApp';
 import AnkiCardApp from '@/components/AnkiCardApp';
 import ChatApp from '@/components/ChatApp';
 
 const Index = () => {
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [examDate] = useState(new Date('2025-07-15')); // Example exam date
   const [progress, setProgress] = useState(65); // Example progress
   const [timeLeft, setTimeLeft] = useState('');
   const [isChatOpen, setIsChatOpen] = useState(false);
+  // Simulate having files uploaded for demo purposes
+  const hasUploadedFiles = true;
 
   // Countdown timer
   useEffect(() => {
@@ -37,12 +36,6 @@ const Index = () => {
     return () => clearInterval(timer);
   }, [examDate]);
 
-  const handleFileUpload = (files: File[]) => {
-    setUploadedFiles(prev => [...prev, ...files]);
-    // Simulate progress increase when files are uploaded
-    setProgress(prev => Math.min(prev + 10, 100));
-  };
-
   return (
     <div className="min-h-screen bg-[#f8f9fa] font-sans relative">
       {/* Header */}
@@ -54,6 +47,12 @@ const Index = () => {
               <h1 className="text-2xl font-bold">Doodle</h1>
             </div>
             <div className="flex items-center space-x-4">
+              <Link to="/upload">
+                <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload Materials
+                </Button>
+              </Link>
               <div className="flex items-center space-x-2 text-sm">
                 <Clock className="h-5 w-5" />
                 <span>Exam in: {timeLeft}</span>
@@ -70,23 +69,17 @@ const Index = () => {
       </header>
 
       <div className="container mx-auto px-6 py-8">
-        {/* File Upload Section */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-[#0f6cbf] mb-4">Upload Course Materials</h2>
-          <FileUploadZone onFileUpload={handleFileUpload} uploadedFiles={uploadedFiles} />
-        </div>
-
         {/* Main Apps Grid */}
         <div className="space-y-6 mb-8">
           {/* Quiz App - Full Width */}
           <div className="w-full">
-            <QuizApp isEnabled={uploadedFiles.length > 0} />
+            <QuizApp isEnabled={hasUploadedFiles} />
           </div>
           
           {/* Anki Cards and Mock Exam - Side by Side */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <AnkiCardApp isEnabled={uploadedFiles.length > 0} />
-            <MockExamApp isEnabled={uploadedFiles.length > 0} />
+            <AnkiCardApp isEnabled={hasUploadedFiles} />
+            <MockExamApp isEnabled={hasUploadedFiles} />
           </div>
         </div>
 
@@ -122,7 +115,6 @@ const Index = () => {
               {/* Header */}
               <div className="bg-[#0f6cbf] text-white p-4 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <MessageSquare className="h-6 w-6" />
                   <h3 className="text-lg font-semibold">Chat with Chad</h3>
                 </div>
                 <Button
@@ -137,7 +129,7 @@ const Index = () => {
               
               {/* Chat Content */}
               <div className="flex-1 p-4">
-                <ChatApp isEnabled={uploadedFiles.length > 0} />
+                <ChatApp isEnabled={hasUploadedFiles} />
               </div>
             </div>
           </div>
