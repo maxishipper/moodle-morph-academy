@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Upload, Clock, BarChart3, X, Calendar as CalendarIcon } from 'lucide-react';
+import { Upload, Clock, BarChart3, X, Calendar as CalendarIcon, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
@@ -8,12 +8,14 @@ import QuizApp from '@/components/QuizApp';
 import MockExamApp from '@/components/MockExamApp';
 import AnkiCardApp from '@/components/AnkiCardApp';
 import ChatApp from '@/components/ChatApp';
+import UserStatsMenu from '@/components/UserStatsMenu';
 
 const Index = () => {
   const [examDate] = useState(new Date('2025-07-15'));
   const [progress, setProgress] = useState(65);
   const [timeLeft, setTimeLeft] = useState('');
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isStatsMenuOpen, setIsStatsMenuOpen] = useState(false);
   const hasUploadedFiles = true;
 
   useEffect(() => {
@@ -54,6 +56,14 @@ const Index = () => {
             </Link>
 
             <div className="flex items-center space-x-4">
+              <Button
+                onClick={() => setIsStatsMenuOpen(true)}
+                variant="outline"
+                className="bg-transparent border-white text-white hover:bg-white/10"
+              >
+                <User className="h-4 w-4 mr-2" />
+                Profile
+              </Button>
               <Link to="/upload">
                 <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10">
                   <Upload className="h-4 w-4 mr-2" />
@@ -128,6 +138,12 @@ const Index = () => {
           <Progress value={progress} className="h-6 bg-white/20" />
         </div>
       </footer>
+
+      {/* User Stats Menu */}
+      <UserStatsMenu 
+        isOpen={isStatsMenuOpen} 
+        onClose={() => setIsStatsMenuOpen(false)} 
+      />
 
       {/* Chat Sidebar Overlay */}
       {isChatOpen && (
