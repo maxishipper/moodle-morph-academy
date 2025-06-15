@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Upload, Clock, BarChart3, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,6 @@ import QuizApp from '@/components/QuizApp';
 import MockExamApp from '@/components/MockExamApp';
 import AnkiCardApp from '@/components/AnkiCardApp';
 import ChatApp from '@/components/ChatApp';
-import CalendarTodos from '@/components/CalendarTodos';
 
 const Index = () => {
   const [examDate] = useState(new Date('2025-07-15'));
@@ -35,11 +35,6 @@ const Index = () => {
     return () => clearInterval(timer);
   }, [examDate]);
 
-  const handleProgressUpdate = (newProgress: number) => {
-    const updatedProgress = Math.min(100, Math.max(progress, newProgress));
-    setProgress(updatedProgress);
-  };
-
   return (
     <div className="min-h-screen bg-[#f8f9fa] font-sans relative">
       {/* Header */}
@@ -56,6 +51,16 @@ const Index = () => {
               </div>
               <h1 className="text-2xl font-bold">DOOD?</h1>
             </Link>
+            
+            {/* Progress Bar in Header */}
+            <div className="flex-1 max-w-md mx-8">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium">Learning Progress</span>
+                <span className="text-sm font-bold">{progress}%</span>
+              </div>
+              <Progress value={progress} className="h-2 bg-white/20" />
+            </div>
+
             <div className="flex items-center space-x-4">
               <Link to="/upload">
                 <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10">
@@ -86,7 +91,7 @@ const Index = () => {
 
       <div className="container mx-auto px-6 py-8">
         {/* Main Apps Grid */}
-        <div className="space-y-6 mb-8">
+        <div className="space-y-6">
           {/* Quiz App - Full Width */}
           <div className="w-full">
             <Link to="/quiz">
@@ -108,27 +113,6 @@ const Index = () => {
                 <MockExamApp isEnabled={hasUploadedFiles} />
               </div>
             </Link>
-          </div>
-
-          {/* Calendar & Todos - Full Width */}
-          <div className="w-full">
-            <CalendarTodos onProgressUpdate={handleProgressUpdate} />
-          </div>
-        </div>
-
-        {/* Progress Section */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-bold text-[#0f6cbf] flex items-center">
-              <BarChart3 className="h-6 w-6 mr-2" />
-              Learning Progress
-            </h3>
-            <span className="text-2xl font-bold text-[#0f6cbf]">{progress}%</span>
-          </div>
-          <Progress value={progress} className="h-3 mb-2" />
-          <div className="flex justify-between text-sm text-gray-600">
-            <span>Course Completion</span>
-            <span>Exam Readiness</span>
           </div>
         </div>
       </div>

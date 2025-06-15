@@ -5,15 +5,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Check, Trash2, Calendar as CalendarIcon } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Plus, Check, Trash2, Calendar as CalendarIcon, Clock, MapPin, Edit } from 'lucide-react';
 import { toast } from 'sonner';
 
-interface Todo {
+interface Event {
   id: string;
   title: string;
   description?: string;
-  completed: boolean;
   date: string;
+  startTime: string;
+  endTime: string;
+  location?: string;
+  completed: boolean;
   createdAt: Date;
 }
 
@@ -26,23 +31,30 @@ interface CalendarTodosProps {
 
 const CalendarTodos = ({ onProgressUpdate, currentDate, view = 'month', onDateChange }: CalendarTodosProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(currentDate || new Date());
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [newTodo, setNewTodo] = useState({ title: '', description: '' });
+  const [events, setEvents] = useState<Event[]>([]);
+  const [newEvent, setNewEvent] = useState({ 
+    title: '', 
+    description: '', 
+    startTime: '09:00', 
+    endTime: '10:00', 
+    location: '' 
+  });
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [completedAnimation, setCompletedAnimation] = useState<string | null>(null);
 
   const selectedDateString = selectedDate?.toDateString() || '';
-  const todosForSelectedDate = todos.filter(todo => todo.date === selectedDateString);
-  const completedTodos = todosForSelectedDate.filter(todo => todo.completed);
-  const totalTodos = todosForSelectedDate.length;
+  const eventsForSelectedDate = events.filter(event => event.date === selectedDateString);
+  const completedEvents = eventsForSelectedDate.filter(event => event.completed);
+  const totalEvents = eventsForSelectedDate.length;
 
-  const dailyProgress = totalTodos > 0 ? (completedTodos.length / totalTodos) * 100 : 0;
+  const dailyProgress = totalEvents > 0 ? (completedEvents.length / totalEvents) * 100 : 0;
 
   useEffect(() => {
-    if (onProgressUpdate && totalTodos > 0) {
+    if (onProgressUpdate && totalEvents > 0) {
       onProgressUpdate(dailyProgress);
     }
-  }, [dailyProgress, onProgressUpdate, totalTodos]);
+  }, [dailyProgress, onProgressUpdate, totalEvents]);
 
   useEffect(() => {
     if (currentDate) {
@@ -57,49 +69,183 @@ const CalendarTodos = ({ onProgressUpdate, currentDate, view = 'month', onDateCh
     }
   };
 
-  const addTodo = () => {
-    if (!newTodo.title.trim()) return;
+  const addEvent = () => {
+    if (!newEvent.title.trim()) return;
 
-    const todo: Todo = {
+    const event: Event = {
       id: Date.now().toString(),
-      title: newTodo.title,
-      description: newTodo.description,
-      completed: false,
+      title: newEvent.title,
+      description: newEvent.description,
       date: selectedDateString,
+      startTime: newEvent.startTime,
+      endTime: newEvent.endTime,
+      location: newEvent.location,
+      completed: false,
       createdAt: new Date()
     };
 
-    setTodos(prev => [...prev, todo]);
-    setNewTodo({ title: '', description: '' });
+    setEvents(prev => [...prev, event]);
+    setNewEvent({ title: '', description: '', startTime: '09:00', endTime: '10:00', location: '' });
     setShowAddForm(false);
-    toast.success('Task added!');
+    toast.success('Event added!');
   };
 
-  const toggleTodo = (id: string) => {
-    setTodos(prev => prev.map(todo => {
-      if (todo.id === id) {
-        const updatedTodo = { ...todo, completed: !todo.completed };
-        if (updatedTodo.completed) {
+  const updateEvent = () => {
+    if (!editingEvent || !newEvent.title.trim()) return;
+
+    setEvents(prev => prev.map(event => 
+      event.id === editingEvent.id 
+        ? { 
+            ...event, 
+            title: newEvent.title,
+            description: newEvent.description,
+            startTime: newEvent.startTime,
+            endTime: newEvent.endTime,
+            location: newEvent.location
+          }
+        : event
+    ));
+    
+    setEditingEvent(null);
+    setNewEvent({ title: '', description: '', startTime: '09:00', endTime: '10:00', location: '' });
+    toast.success('Event updated!');
+  };
+
+  const toggleEvent = (id: string) => {
+    setEvents(prev => prev.map(event => {
+      if (event.id === id) {
+        const updatedEvent = { ...event, completed: !event.completed };
+        if (updatedEvent.completed) {
           setCompletedAnimation(id);
           setTimeout(() => setCompletedAnimation(null), 1000);
-          toast.success('Great job! Task completed! 🎉', {
+          toast.success('Great job! Event completed! 🎉', {
             duration: 2000,
           });
         }
-        return updatedTodo;
+        return updatedEvent;
       }
-      return todo;
+      return event;
     }));
   };
 
-  const deleteTodo = (id: string) => {
-    setTodos(prev => prev.filter(todo => todo.id !== id));
-    toast.success('Task deleted');
+  const deleteEvent = (id: string) => {
+    setEvents(prev => prev.filter(event => event.id !== id));
+    toast.success('Event deleted');
   };
 
-  const getDatesWithTodos = () => {
-    const dates = new Set(todos.map(todo => todo.date));
+  const startEditing = (event: Event) => {
+    setEditingEvent(event);
+    setNewEvent({
+      title: event.title,
+      description: event.description || '',
+      startTime: event.startTime,
+      endTime: event.endTime,
+      location: event.location || ''
+    });
+  };
+
+  const getDatesWithEvents = () => {
+    const dates = new Set(events.map(event => event.date));
     return Array.from(dates).map(dateString => new Date(dateString));
+  };
+
+  const renderTimeSlots = () => {
+    const hours = Array.from({ length: 24 }, (_, i) => i);
+    const todayEvents = eventsForSelectedDate.sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+    return (
+      <div className="space-y-1">
+        {hours.map(hour => {
+          const timeString = `${hour.toString().padStart(2, '0')}:00`;
+          const eventsAtTime = todayEvents.filter(event => 
+            event.startTime <= timeString && event.endTime > timeString
+          );
+
+          return (
+            <div key={hour} className="flex items-center border-b border-gray-100 py-1">
+              <div className="w-16 text-xs text-gray-500 flex-shrink-0">
+                {hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
+              </div>
+              <div className="flex-1 ml-4 min-h-[32px] flex items-center">
+                {eventsAtTime.map(event => (
+                  <div
+                    key={event.id}
+                    className={`
+                      px-2 py-1 rounded text-xs mr-2 cursor-pointer
+                      ${event.completed 
+                        ? 'bg-green-100 text-green-800 line-through' 
+                        : 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                      }
+                    `}
+                    onClick={() => toggleEvent(event.id)}
+                  >
+                    {event.title}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
+  const renderWeekView = () => {
+    const weekStart = new Date(selectedDate || new Date());
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    
+    return (
+      <div className="bg-white border rounded-lg p-4">
+        <div className="grid grid-cols-8 gap-2">
+          <div className="font-semibold text-sm"></div>
+          {Array.from({ length: 7 }, (_, i) => {
+            const day = new Date(weekStart);
+            day.setDate(weekStart.getDate() + i);
+            return (
+              <div key={i} className="text-center border-r last:border-r-0">
+                <div className="font-semibold text-sm">{day.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                <div className="text-lg">{day.getDate()}</div>
+              </div>
+            );
+          })}
+          {Array.from({ length: 24 }, (_, hour) => (
+            <React.Fragment key={hour}>
+              <div className="text-xs text-gray-500 py-2 border-r">
+                {hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
+              </div>
+              {Array.from({ length: 7 }, (_, day) => {
+                const currentDay = new Date(weekStart);
+                currentDay.setDate(weekStart.getDate() + day);
+                const dayEvents = events.filter(event => 
+                  event.date === currentDay.toDateString() &&
+                  parseInt(event.startTime.split(':')[0]) === hour
+                );
+
+                return (
+                  <div key={day} className="border-l border-t h-12 relative border-r last:border-r-0">
+                    {dayEvents.map(event => (
+                      <div
+                        key={event.id}
+                        className={`
+                          absolute inset-x-1 top-1 px-1 py-0.5 rounded text-xs cursor-pointer
+                          ${event.completed 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-blue-100 text-blue-800'
+                          }
+                        `}
+                        onClick={() => toggleEvent(event.id)}
+                      >
+                        {event.title}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   const renderCalendarView = () => {
@@ -113,51 +259,15 @@ const CalendarTodos = ({ onProgressUpdate, currentDate, view = 'month', onDateCh
               day: 'numeric' 
             })}</h3>
           </div>
-          <div className="space-y-2">
-            {Array.from({ length: 24 }, (_, hour) => (
-              <div key={hour} className="flex items-center border-b py-2">
-                <div className="w-16 text-sm text-gray-500">
-                  {hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
-                </div>
-                <div className="flex-1 ml-4 h-8 border-l-2 border-gray-200"></div>
-              </div>
-            ))}
+          <div className="max-h-96 overflow-y-auto">
+            {renderTimeSlots()}
           </div>
         </div>
       );
     }
 
     if (view === 'week') {
-      const weekStart = new Date(selectedDate || new Date());
-      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-      
-      return (
-        <div className="bg-white border rounded-lg p-4">
-          <div className="grid grid-cols-8 gap-2">
-            <div className="font-semibold text-sm"></div>
-            {Array.from({ length: 7 }, (_, i) => {
-              const day = new Date(weekStart);
-              day.setDate(weekStart.getDate() + i);
-              return (
-                <div key={i} className="text-center">
-                  <div className="font-semibold text-sm">{day.toLocaleDateString('en-US', { weekday: 'short' })}</div>
-                  <div className="text-lg">{day.getDate()}</div>
-                </div>
-              );
-            })}
-            {Array.from({ length: 24 }, (_, hour) => (
-              <React.Fragment key={hour}>
-                <div className="text-xs text-gray-500 py-2">
-                  {hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
-                </div>
-                {Array.from({ length: 7 }, (_, day) => (
-                  <div key={day} className="border-l border-t h-12"></div>
-                ))}
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-      );
+      return renderWeekView();
     }
 
     return (
@@ -167,10 +277,10 @@ const CalendarTodos = ({ onProgressUpdate, currentDate, view = 'month', onDateCh
         onSelect={handleDateSelect}
         className="rounded-md border p-3"
         modifiers={{
-          hasTodos: getDatesWithTodos()
+          hasEvents: getDatesWithEvents()
         }}
         modifiersStyles={{
-          hasTodos: { 
+          hasEvents: { 
             backgroundColor: '#0f6cbf', 
             color: 'white',
             fontWeight: 'bold'
@@ -186,7 +296,7 @@ const CalendarTodos = ({ onProgressUpdate, currentDate, view = 'month', onDateCh
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-2xl font-bold text-[#0f6cbf] flex items-center">
             <CalendarIcon className="h-6 w-6 mr-2" />
-            Calendar & Tasks
+            Calendar & Events
           </h3>
           <div className="text-right">
             <div className="text-sm text-gray-600">Daily Progress</div>
@@ -201,28 +311,106 @@ const CalendarTodos = ({ onProgressUpdate, currentDate, view = 'month', onDateCh
           {renderCalendarView()}
           {view === 'month' && (
             <div className="text-sm text-gray-600 text-center">
-              Dates with tasks are highlighted in blue
+              Dates with events are highlighted in blue
             </div>
           )}
         </div>
 
-        {/* Todos */}
+        {/* Events */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h4 className="text-lg font-semibold">
-              Tasks for {selectedDate?.toLocaleDateString()}
+              Events for {selectedDate?.toLocaleDateString()}
             </h4>
-            <Button
-              onClick={() => setShowAddForm(true)}
-              size="sm"
-              className="bg-[#0f6cbf] hover:bg-[#0d5aa7]"
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              Add Task
-            </Button>
+            <Dialog open={showAddForm || editingEvent !== null} onOpenChange={(open) => {
+              if (!open) {
+                setShowAddForm(false);
+                setEditingEvent(null);
+                setNewEvent({ title: '', description: '', startTime: '09:00', endTime: '10:00', location: '' });
+              }
+            }}>
+              <DialogTrigger asChild>
+                <Button
+                  onClick={() => setShowAddForm(true)}
+                  size="sm"
+                  className="bg-[#0f6cbf] hover:bg-[#0d5aa7]"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add Event
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>{editingEvent ? 'Edit Event' : 'Add New Event'}</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Event Title</Label>
+                    <Input
+                      id="title"
+                      placeholder="Event title..."
+                      value={newEvent.title}
+                      onChange={(e) => setNewEvent(prev => ({ ...prev, title: e.target.value }))}
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="startTime">Start Time</Label>
+                      <Input
+                        id="startTime"
+                        type="time"
+                        value={newEvent.startTime}
+                        onChange={(e) => setNewEvent(prev => ({ ...prev, startTime: e.target.value }))}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="endTime">End Time</Label>
+                      <Input
+                        id="endTime"
+                        type="time"
+                        value={newEvent.endTime}
+                        onChange={(e) => setNewEvent(prev => ({ ...prev, endTime: e.target.value }))}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="location">Location (optional)</Label>
+                    <Input
+                      id="location"
+                      placeholder="Event location..."
+                      value={newEvent.location}
+                      onChange={(e) => setNewEvent(prev => ({ ...prev, location: e.target.value }))}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Description (optional)</Label>
+                    <Textarea
+                      id="description"
+                      placeholder="Event description..."
+                      value={newEvent.description}
+                      onChange={(e) => setNewEvent(prev => ({ ...prev, description: e.target.value }))}
+                      className="min-h-[80px]"
+                    />
+                  </div>
+
+                  <div className="flex gap-2 pt-4">
+                    <Button 
+                      onClick={editingEvent ? updateEvent : addEvent} 
+                      className="flex-1"
+                      disabled={!newEvent.title.trim()}
+                    >
+                      {editingEvent ? 'Update Event' : 'Add Event'}
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
 
-          {totalTodos > 0 && (
+          {totalEvents > 0 && (
             <div className="bg-gray-200 rounded-full h-3 mb-4">
               <div 
                 className="bg-green-500 h-3 rounded-full transition-all duration-500 ease-out"
@@ -231,45 +419,24 @@ const CalendarTodos = ({ onProgressUpdate, currentDate, view = 'month', onDateCh
             </div>
           )}
 
-          {showAddForm && (
-            <div className="bg-gray-50 p-4 rounded-lg space-y-3 animate-fade-in">
-              <Input
-                placeholder="Task title..."
-                value={newTodo.title}
-                onChange={(e) => setNewTodo(prev => ({ ...prev, title: e.target.value }))}
-                onKeyPress={(e) => e.key === 'Enter' && addTodo()}
-              />
-              <Textarea
-                placeholder="Description (optional)..."
-                value={newTodo.description}
-                onChange={(e) => setNewTodo(prev => ({ ...prev, description: e.target.value }))}
-                className="min-h-[60px]"
-              />
-              <div className="flex gap-2">
-                <Button onClick={addTodo} size="sm">Add</Button>
-                <Button onClick={() => setShowAddForm(false)} variant="outline" size="sm">
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
-
           <div className="space-y-2 max-h-96 overflow-y-auto">
-            {todosForSelectedDate.length === 0 ? (
+            {eventsForSelectedDate.length === 0 ? (
               <div className="text-center text-gray-500 py-8">
-                No tasks for this date. Add one to get started!
+                No events for this date. Add one to get started!
               </div>
             ) : (
-              todosForSelectedDate.map((todo) => (
+              eventsForSelectedDate
+                .sort((a, b) => a.startTime.localeCompare(b.startTime))
+                .map((event) => (
                 <div
-                  key={todo.id}
+                  key={event.id}
                   className={`
                     p-3 border rounded-lg transition-all duration-300 
-                    ${todo.completed 
+                    ${event.completed 
                       ? 'bg-green-50 border-green-200' 
                       : 'bg-white border-gray-200 hover:border-[#0f6cbf]'
                     }
-                    ${completedAnimation === todo.id 
+                    ${completedAnimation === event.id 
                       ? 'animate-scale-in transform scale-105' 
                       : ''
                     }
@@ -280,52 +447,74 @@ const CalendarTodos = ({ onProgressUpdate, currentDate, view = 'month', onDateCh
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => toggleTodo(todo.id)}
+                        onClick={() => toggleEvent(event.id)}
                         className={`
                           p-1 h-6 w-6 rounded-full transition-all duration-200
-                          ${todo.completed 
+                          ${event.completed 
                             ? 'bg-green-500 text-white hover:bg-green-600' 
                             : 'border-2 border-gray-300 hover:border-[#0f6cbf]'
                           }
                         `}
                       >
-                        {todo.completed && <Check className="h-3 w-3" />}
+                        {event.completed && <Check className="h-3 w-3" />}
                       </Button>
                       <div className="flex-1">
-                        <h5 className={`font-medium ${todo.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
-                          {todo.title}
+                        <h5 className={`font-medium ${event.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
+                          {event.title}
                         </h5>
-                        {todo.description && (
-                          <p className={`text-sm mt-1 ${todo.completed ? 'line-through text-gray-400' : 'text-gray-600'}`}>
-                            {todo.description}
+                        <div className="flex items-center space-x-4 mt-1">
+                          <div className={`flex items-center space-x-1 text-sm ${event.completed ? 'line-through text-gray-400' : 'text-gray-600'}`}>
+                            <Clock className="h-3 w-3" />
+                            <span>{event.startTime} - {event.endTime}</span>
+                          </div>
+                          {event.location && (
+                            <div className={`flex items-center space-x-1 text-sm ${event.completed ? 'line-through text-gray-400' : 'text-gray-600'}`}>
+                              <MapPin className="h-3 w-3" />
+                              <span>{event.location}</span>
+                            </div>
+                          )}
+                        </div>
+                        {event.description && (
+                          <p className={`text-sm mt-1 ${event.completed ? 'line-through text-gray-400' : 'text-gray-600'}`}>
+                            {event.description}
                           </p>
                         )}
-                        {todo.completed && (
+                        {event.completed && (
                           <Badge variant="secondary" className="mt-2 bg-green-100 text-green-800">
                             Completed ✓
                           </Badge>
                         )}
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteTodo(todo.id)}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex space-x-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => startEditing(event)}
+                        className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteEvent(event.id)}
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))
             )}
           </div>
 
-          {totalTodos > 0 && (
+          {totalEvents > 0 && (
             <div className="bg-[#0f6cbf]/5 p-3 rounded-lg">
               <div className="text-sm text-[#0f6cbf] font-medium">
-                {completedTodos.length} of {totalTodos} tasks completed
-                {completedTodos.length === totalTodos && totalTodos > 0 && (
+                {completedEvents.length} of {totalEvents} events completed
+                {completedEvents.length === totalEvents && totalEvents > 0 && (
                   <span className="ml-2">🎉 All done!</span>
                 )}
               </div>
