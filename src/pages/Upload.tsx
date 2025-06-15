@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ArrowLeft, Book } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,7 +24,7 @@ const Upload = () => {
               </div>
               <h1 className="text-2xl font-bold font-mono tracking-wider">mood</h1>
             </Link>
-            <Link to="/">
+            <Link to="/dashboard">
               <Button className="bg-white text-[#0f6cbf] hover:bg-gray-100">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
@@ -42,7 +43,7 @@ const Upload = () => {
           
           {uploadedFiles.length > 0 && (
             <div className="mt-8 text-center">
-              <Link to="/">
+              <Link to="/dashboard">
                 <Button className="bg-[#0f6cbf] hover:bg-[#0d5aa7] text-lg px-8 py-3">
                   Continue to Learning Apps
                 </Button>

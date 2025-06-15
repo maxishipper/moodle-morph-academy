@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ArrowLeft, Plus, ChevronLeft, ChevronRight, Book } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -62,7 +63,7 @@ const Calendar = () => {
               </div>
               <h1 className="text-2xl font-bold font-mono tracking-wider">mood</h1>
             </Link>
-            <Link to="/">
+            <Link to="/dashboard">
               <Button className="bg-white text-[#0f6cbf] hover:bg-gray-100">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
