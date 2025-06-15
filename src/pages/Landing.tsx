@@ -7,19 +7,22 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 
 const Landing = () => {
-  const [examDate, setExamDate] = useState('');
+  const handleGoogleCalendarLogin = () => {
+    // This would integrate with Google Calendar OAuth
+    window.open('https://accounts.google.com/oauth/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_REDIRECT_URI&scope=https://www.googleapis.com/auth/calendar&response_type=code', '_blank');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f6cbf] via-[#1e7bcf] to-[#2d8adf] text-white">
       {/* Header */}
       <header className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Book className="h-10 w-10 text-white" />
-            <h1 className="text-2xl font-bold font-mono tracking-wider">mood</h1>
+          <div className="flex items-center space-x-2">
+            <Book className="h-6 w-6 text-white/80" />
+            <h1 className="text-lg font-light tracking-[0.2em] text-white/90">mood</h1>
           </div>
           <Link to="/dashboard">
-            <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10">
+            <Button variant="outline" className="bg-transparent border-white/30 text-white/80 hover:bg-white/5 hover:text-white hover:border-white/50 transition-all">
               Dashboard
             </Button>
           </Link>
@@ -42,18 +45,19 @@ const Landing = () => {
 
           {/* CTA Form */}
           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 mb-16 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-semibold mb-6">When is your exam?</h3>
-            <div className="flex flex-col md:flex-row gap-4 mb-6">
-              <Input
-                type="date"
-                value={examDate}
-                onChange={(e) => setExamDate(e.target.value)}
-                className="bg-white text-black text-lg h-12"
-                placeholder="Select your exam date"
-              />
-              <Link to="/upload">
-                <Button className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black font-semibold text-lg h-12 px-8 hover:from-yellow-300 hover:to-orange-300 w-full md:w-auto">
-                  Upload Courses
+            <h3 className="text-2xl font-semibold mb-6">Connect Your Calendar to Get Started</h3>
+            <div className="flex flex-col gap-4 mb-6">
+              <Button 
+                onClick={handleGoogleCalendarLogin}
+                className="bg-white text-[#0f6cbf] font-semibold text-lg h-14 px-8 hover:bg-gray-100 w-full flex items-center justify-center gap-3"
+              >
+                <Calendar className="h-6 w-6" />
+                Connect Google Calendar
+              </Button>
+              <div className="text-white/60 text-sm">or</div>
+              <Link to="/upload" className="w-full">
+                <Button className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black font-semibold text-lg h-12 px-8 hover:from-yellow-300 hover:to-orange-300 w-full">
+                  Upload Courses Directly
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -184,17 +188,18 @@ const Landing = () => {
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Ace Your Exams?</h2>
           <p className="text-xl mb-8 opacity-80">Join thousands of students who are already studying smarter with mood</p>
-          <div className="flex flex-col md:flex-row gap-4 justify-center items-center max-w-lg mx-auto">
-            <Input
-              type="date"
-              value={examDate}
-              onChange={(e) => setExamDate(e.target.value)}
-              className="bg-white text-black text-lg h-12"
-              placeholder="When is your exam?"
-            />
-            <Link to="/upload">
-              <Button className="bg-black text-white font-semibold text-lg h-12 px-8 hover:bg-gray-800 w-full md:w-auto">
-                Start Studying Now
+          <div className="flex flex-col gap-4 justify-center items-center max-w-lg mx-auto">
+            <Button 
+              onClick={handleGoogleCalendarLogin}
+              className="bg-black text-white font-semibold text-lg h-14 px-8 hover:bg-gray-800 w-full flex items-center justify-center gap-3"
+            >
+              <Calendar className="h-6 w-6" />
+              Connect Google Calendar & Start
+            </Button>
+            <div className="text-black/60 text-sm">or</div>
+            <Link to="/upload" className="w-full">
+              <Button className="bg-white text-black font-semibold text-lg h-12 px-8 hover:bg-gray-100 w-full">
+                Upload Courses Directly
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
@@ -206,9 +211,9 @@ const Landing = () => {
       <footer className="bg-black/20 py-12">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-3 mb-4 md:mb-0">
-              <Book className="h-8 w-8 text-white" />
-              <span className="text-xl font-bold font-mono tracking-wider">mood</span>
+            <div className="flex items-center space-x-2 mb-4 md:mb-0">
+              <Book className="h-6 w-6 text-white/60" />
+              <span className="text-lg font-light tracking-[0.2em] text-white/70">mood</span>
             </div>
             <div className="text-white/70">
               © 2025 mood. All rights reserved. Study smarter, achieve more.
