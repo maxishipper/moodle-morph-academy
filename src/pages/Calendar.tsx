@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, Plus, ChevronLeft, ChevronRight, Book } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -57,11 +56,9 @@ const Calendar = () => {
       <header className="bg-[#0f6cbf] text-white shadow-lg">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <div className="h-12 w-12 flex items-center justify-center overflow-hidden">
-                <Book className="h-10 w-10 text-white" />
-              </div>
-              <h1 className="text-2xl font-bold font-mono tracking-wider">mood</h1>
+            <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+              <Book className="h-6 w-6 text-white/80" />
+              <h1 className="text-lg font-light tracking-[0.2em] text-white/90">mood</h1>
             </Link>
             <Link to="/dashboard">
               <Button className="bg-white text-[#0f6cbf] hover:bg-gray-100">

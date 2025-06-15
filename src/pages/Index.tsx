@@ -42,11 +42,9 @@ const Index = () => {
       <header className="bg-[#0f6cbf] text-white shadow-lg">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <div className="h-16 w-16 flex items-center justify-center">
-                <Book className="h-12 w-12 text-white" />
-              </div>
-              <h1 className="text-3xl font-bold font-mono tracking-wider">mood</h1>
+            <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+              <Book className="h-6 w-6 text-white/80" />
+              <h1 className="text-lg font-light tracking-[0.2em] text-white/90">mood</h1>
             </Link>
 
             <div className="flex items-center space-x-4">
