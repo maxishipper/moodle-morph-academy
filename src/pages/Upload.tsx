@@ -19,8 +19,12 @@ const Upload = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center text-lg">
-                🤖
+              <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/lovable-uploads/b1e02ec5-6a97-4c44-912c-358925786899.png" 
+                  alt="Dood Logo" 
+                  className="h-6 w-6 object-contain"
+                />
               </div>
               <h1 className="text-2xl font-bold">Dood</h1>
             </Link>

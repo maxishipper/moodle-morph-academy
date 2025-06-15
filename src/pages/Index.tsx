@@ -8,6 +8,7 @@ import QuizApp from '@/components/QuizApp';
 import MockExamApp from '@/components/MockExamApp';
 import AnkiCardApp from '@/components/AnkiCardApp';
 import ChatApp from '@/components/ChatApp';
+import CalendarTodos from '@/components/CalendarTodos';
 
 const Index = () => {
   const [examDate] = useState(new Date('2025-07-15')); // Example exam date
@@ -37,6 +38,12 @@ const Index = () => {
     return () => clearInterval(timer);
   }, [examDate]);
 
+  const handleProgressUpdate = (newProgress: number) => {
+    // Update progress based on daily task completion
+    const updatedProgress = Math.min(100, Math.max(progress, newProgress));
+    setProgress(updatedProgress);
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f9fa] font-sans relative">
       {/* Header */}
@@ -44,8 +51,12 @@ const Index = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center text-lg">
-                🤖
+              <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/lovable-uploads/b1e02ec5-6a97-4c44-912c-358925786899.png" 
+                  alt="Dood Logo" 
+                  className="h-6 w-6 object-contain"
+                />
               </div>
               <h1 className="text-2xl font-bold">Dood</h1>
             </Link>
@@ -83,6 +94,11 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <AnkiCardApp isEnabled={hasUploadedFiles} />
             <MockExamApp isEnabled={hasUploadedFiles} />
+          </div>
+
+          {/* Calendar & Todos - Full Width */}
+          <div className="w-full">
+            <CalendarTodos onProgressUpdate={handleProgressUpdate} />
           </div>
         </div>
 
