@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { BookOpen, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import FileUploadZone from '@/components/FileUploadZone';
@@ -18,10 +18,12 @@ const Upload = () => {
       <header className="bg-[#0f6cbf] text-white shadow-lg">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <BookOpen className="h-8 w-8" />
-              <h1 className="text-2xl font-bold">Doodle</h1>
-            </div>
+            <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+              <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center text-lg">
+                🤖
+              </div>
+              <h1 className="text-2xl font-bold">Dood</h1>
+            </Link>
             <Link to="/">
               <Button className="bg-white text-[#0f6cbf] hover:bg-gray-100">
                 <ArrowLeft className="h-4 w-4 mr-2" />

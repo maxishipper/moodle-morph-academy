@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { Upload, BookOpen, Clock, BarChart3, X } from 'lucide-react';
+import { Upload, Clock, BarChart3, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
@@ -42,10 +43,12 @@ const Index = () => {
       <header className="bg-[#0f6cbf] text-white shadow-lg">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <BookOpen className="h-8 w-8" />
-              <h1 className="text-2xl font-bold">Doodle</h1>
-            </div>
+            <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+              <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center text-lg">
+                🤖
+              </div>
+              <h1 className="text-2xl font-bold">Dood</h1>
+            </Link>
             <div className="flex items-center space-x-4">
               <Link to="/upload">
                 <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10">
