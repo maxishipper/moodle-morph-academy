@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Upload, Clock, BarChart3, X } from 'lucide-react';
+import { Upload, Clock, BarChart3, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
@@ -11,14 +11,12 @@ import ChatApp from '@/components/ChatApp';
 import CalendarTodos from '@/components/CalendarTodos';
 
 const Index = () => {
-  const [examDate] = useState(new Date('2025-07-15')); // Example exam date
-  const [progress, setProgress] = useState(65); // Example progress
+  const [examDate] = useState(new Date('2025-07-15'));
+  const [progress, setProgress] = useState(65);
   const [timeLeft, setTimeLeft] = useState('');
   const [isChatOpen, setIsChatOpen] = useState(false);
-  // Simulate having files uploaded for demo purposes
   const hasUploadedFiles = true;
 
-  // Countdown timer
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date().getTime();
@@ -39,7 +37,6 @@ const Index = () => {
   }, [examDate]);
 
   const handleProgressUpdate = (newProgress: number) => {
-    // Update progress based on daily task completion
     const updatedProgress = Math.min(100, Math.max(progress, newProgress));
     setProgress(updatedProgress);
   };
@@ -67,6 +64,12 @@ const Index = () => {
                   Upload Materials
                 </Button>
               </Link>
+              <Link to="/calendar">
+                <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10">
+                  <CalendarIcon className="h-4 w-4 mr-2" />
+                  Calendar
+                </Button>
+              </Link>
               <div className="flex items-center space-x-2 text-sm">
                 <Clock className="h-5 w-5" />
                 <span>Exam in: {timeLeft}</span>
@@ -87,13 +90,25 @@ const Index = () => {
         <div className="space-y-6 mb-8">
           {/* Quiz App - Full Width */}
           <div className="w-full">
-            <QuizApp isEnabled={hasUploadedFiles} />
+            <Link to="/quiz">
+              <div className="cursor-pointer transform hover:scale-[1.02] transition-transform duration-200">
+                <QuizApp isEnabled={hasUploadedFiles} />
+              </div>
+            </Link>
           </div>
           
           {/* Anki Cards and Mock Exam - Side by Side */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <AnkiCardApp isEnabled={hasUploadedFiles} />
-            <MockExamApp isEnabled={hasUploadedFiles} />
+            <Link to="/anki-cards">
+              <div className="cursor-pointer transform hover:scale-[1.02] transition-transform duration-200 h-full">
+                <AnkiCardApp isEnabled={hasUploadedFiles} />
+              </div>
+            </Link>
+            <Link to="/mock-exam">
+              <div className="cursor-pointer transform hover:scale-[1.02] transition-transform duration-200 h-full">
+                <MockExamApp isEnabled={hasUploadedFiles} />
+              </div>
+            </Link>
           </div>
 
           {/* Calendar & Todos - Full Width */}
@@ -122,16 +137,13 @@ const Index = () => {
       {/* Chat Sidebar Overlay */}
       {isChatOpen && (
         <div className="fixed inset-0 z-50 flex">
-          {/* Backdrop */}
           <div 
             className="flex-1 bg-black bg-opacity-50"
             onClick={() => setIsChatOpen(false)}
           />
           
-          {/* Sidebar */}
           <div className="w-96 bg-white shadow-xl transform transition-transform duration-300 ease-in-out">
             <div className="h-full flex flex-col">
-              {/* Header */}
               <div className="bg-[#0f6cbf] text-white p-4 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <h3 className="text-lg font-semibold">Chat with Chad</h3>
@@ -146,8 +158,7 @@ const Index = () => {
                 </Button>
               </div>
               
-              {/* Chat Content */}
-              <div className="flex-1 p-4">
+              <div className="flex-1">
                 <ChatApp isEnabled={hasUploadedFiles} />
               </div>
             </div>
