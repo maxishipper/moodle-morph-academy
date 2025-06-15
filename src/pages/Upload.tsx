@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Book } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import FileUploadZone from '@/components/FileUploadZone';
@@ -19,13 +19,9 @@ const Upload = () => {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
               <div className="h-12 w-12 flex items-center justify-center overflow-hidden">
-                <img 
-                  src="/lovable-uploads/b1e02ec5-6a97-4c44-912c-358925786899.png" 
-                  alt="DOOD? Logo" 
-                  className="h-12 w-12 object-contain"
-                />
+                <Book className="h-10 w-10 text-white" />
               </div>
-              <h1 className="text-2xl font-bold">DOOD?</h1>
+              <h1 className="text-2xl font-bold font-mono tracking-wider">mood</h1>
             </Link>
             <Link to="/">
               <Button className="bg-white text-[#0f6cbf] hover:bg-gray-100">

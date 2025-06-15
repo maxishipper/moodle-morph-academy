@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Upload, Clock, BarChart3, X, Calendar as CalendarIcon, User } from 'lucide-react';
+import { Upload, Clock, BarChart3, X, Calendar as CalendarIcon, User, Book } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
@@ -45,14 +44,9 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
               <div className="h-16 w-16 flex items-center justify-center">
-                <img 
-                  src="/lovable-uploads/b1e02ec5-6a97-4c44-912c-358925786899.png" 
-                  alt="DOOD? Logo" 
-                  className="h-16 w-16 object-contain"
-                  style={{ backgroundColor: 'transparent' }}
-                />
+                <Book className="h-12 w-12 text-white" />
               </div>
-              <h1 className="text-3xl font-bold">DOOD?</h1>
+              <h1 className="text-3xl font-bold font-mono tracking-wider">mood</h1>
             </Link>
 
             <div className="flex items-center space-x-4">
