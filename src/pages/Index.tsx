@@ -36,30 +36,22 @@ const Index = () => {
   }, [examDate]);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] font-sans relative">
+    <div className="min-h-screen bg-[#f8f9fa] font-sans relative flex flex-col">
       {/* Header */}
       <header className="bg-[#0f6cbf] text-white shadow-lg">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <div className="h-12 w-12 flex items-center justify-center overflow-hidden">
+              <div className="h-16 w-16 flex items-center justify-center">
                 <img 
                   src="/lovable-uploads/b1e02ec5-6a97-4c44-912c-358925786899.png" 
                   alt="DOOD? Logo" 
-                  className="h-12 w-12 object-contain"
+                  className="h-16 w-16 object-contain"
+                  style={{ backgroundColor: 'transparent' }}
                 />
               </div>
-              <h1 className="text-2xl font-bold">DOOD?</h1>
+              <h1 className="text-3xl font-bold">DOOD?</h1>
             </Link>
-            
-            {/* Progress Bar in Header */}
-            <div className="flex-1 max-w-md mx-8">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium">Learning Progress</span>
-                <span className="text-sm font-bold">{progress}%</span>
-              </div>
-              <Progress value={progress} className="h-2 bg-white/20" />
-            </div>
 
             <div className="flex items-center space-x-4">
               <Link to="/upload">
@@ -87,9 +79,18 @@ const Index = () => {
             </div>
           </div>
         </div>
+        
+        {/* Progress Bar - Full Width and Higher */}
+        <div className="w-full bg-[#0f6cbf] px-6 pb-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-lg font-medium">Learning Progress</span>
+            <span className="text-lg font-bold">{progress}%</span>
+          </div>
+          <Progress value={progress} className="h-6 bg-white/20" />
+        </div>
       </header>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-6 py-8 flex-1">
         {/* Main Apps Grid */}
         <div className="space-y-6">
           {/* Quiz App - Full Width */}
@@ -116,6 +117,17 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Footer with Progress Bar */}
+      <footer className="bg-[#0f6cbf] text-white shadow-lg mt-auto">
+        <div className="w-full px-6 py-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-lg font-medium">Overall Learning Progress</span>
+            <span className="text-lg font-bold">{progress}%</span>
+          </div>
+          <Progress value={progress} className="h-6 bg-white/20" />
+        </div>
+      </footer>
 
       {/* Chat Sidebar Overlay */}
       {isChatOpen && (
