@@ -1,12 +1,15 @@
+
 import React, { useState } from 'react';
 import { ArrowLeft, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { Link } from 'react-router-dom';
 import CalendarTodos from '@/components/CalendarTodos';
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<'month' | 'week' | 'day'>('month');
+  const [progress, setProgress] = useState(0);
 
   const navigateDate = (direction: 'prev' | 'next') => {
     const newDate = new Date(currentDate);
@@ -40,6 +43,10 @@ const Calendar = () => {
     return currentDate.toLocaleDateString('en-US', options);
   };
 
+  const handleProgressUpdate = (newProgress: number) => {
+    setProgress(newProgress);
+  };
+
   return (
     <div className="min-h-screen bg-[#f8f9fa] font-sans">
       {/* Header */}
@@ -52,6 +59,7 @@ const Calendar = () => {
                   src="/lovable-uploads/b1e02ec5-6a97-4c44-912c-358925786899.png" 
                   alt="DOOD? Logo" 
                   className="h-12 w-12 object-contain"
+                  style={{ backgroundColor: 'transparent' }}
                 />
               </div>
               <h1 className="text-2xl font-bold">DOOD?</h1>
@@ -63,6 +71,15 @@ const Calendar = () => {
               </Button>
             </Link>
           </div>
+        </div>
+        
+        {/* Progress Bar - Full Width and Higher */}
+        <div className="w-full bg-[#0f6cbf] px-6 pb-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-lg font-medium">Daily Progress</span>
+            <span className="text-lg font-bold">{Math.round(progress)}%</span>
+          </div>
+          <Progress value={progress} className="h-8 bg-white/20" />
         </div>
       </header>
 
@@ -118,8 +135,20 @@ const Calendar = () => {
           currentDate={currentDate}
           view={view}
           onDateChange={setCurrentDate}
+          onProgressUpdate={handleProgressUpdate}
         />
       </div>
+
+      {/* Footer with Progress Bar */}
+      <footer className="bg-[#0f6cbf] text-white shadow-lg mt-auto">
+        <div className="w-full px-6 py-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-lg font-medium">Overall Daily Progress</span>
+            <span className="text-lg font-bold">{Math.round(progress)}%</span>
+          </div>
+          <Progress value={progress} className="h-8 bg-white/20" />
+        </div>
+      </footer>
     </div>
   );
 };
