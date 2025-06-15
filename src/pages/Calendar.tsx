@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import CalendarTodos from '@/components/CalendarTodos';
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [view, setView] = useState<'month' | 'week' | 'day'>('month');
+  const [view, setView] = useState<'month' | 'week' | 'day' | 'google'>('month');
   const [progress, setProgress] = useState(0);
 
   const navigateDate = (direction: 'prev' | 'next') => {
@@ -24,6 +23,10 @@ const Calendar = () => {
   };
 
   const getDateHeader = () => {
+    if (view === 'google') {
+      return 'Google Calendar';
+    }
+    
     const options: Intl.DateTimeFormatOptions = {};
     if (view === 'month') {
       options.month = 'long';
@@ -88,34 +91,43 @@ const Calendar = () => {
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div className="flex items-center space-x-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigateDate('prev')}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <h2 className="text-xl font-semibold text-[#0f6cbf] min-w-[200px] text-center">
-                {getDateHeader()}
-              </h2>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigateDate('next')}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentDate(new Date())}
-              >
-                Today
-              </Button>
+              {view !== 'google' && (
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigateDate('prev')}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <h2 className="text-xl font-semibold text-[#0f6cbf] min-w-[200px] text-center">
+                    {getDateHeader()}
+                  </h2>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigateDate('next')}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentDate(new Date())}
+                  >
+                    Today
+                  </Button>
+                </>
+              )}
+              {view === 'google' && (
+                <h2 className="text-xl font-semibold text-[#0f6cbf]">
+                  {getDateHeader()}
+                </h2>
+              )}
             </div>
             
             <div className="flex space-x-2">
-              {(['day', 'week', 'month'] as const).map((viewType) => (
+              {(['day', 'week', 'month', 'google'] as const).map((viewType) => (
                 <Button
                   key={viewType}
                   variant={view === viewType ? 'default' : 'outline'}
@@ -123,20 +135,37 @@ const Calendar = () => {
                   onClick={() => setView(viewType)}
                   className={view === viewType ? 'bg-[#0f6cbf] hover:bg-[#0d5aa7]' : ''}
                 >
-                  {viewType.charAt(0).toUpperCase() + viewType.slice(1)}
+                  {viewType === 'google' ? 'Google Calendar' : viewType.charAt(0).toUpperCase() + viewType.slice(1)}
                 </Button>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Calendar with Todos */}
-        <CalendarTodos 
-          currentDate={currentDate}
-          view={view}
-          onDateChange={setCurrentDate}
-          onProgressUpdate={handleProgressUpdate}
-        />
+        {/* Calendar Content */}
+        {view === 'google' ? (
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="calendar-container">
+              <iframe 
+                src="https://calendar.google.com/calendar/embed?src=b00807289%40essec.edu&ctz=Europe%2FParis"
+                style={{ border: 0 }} 
+                width="100%" 
+                height="600" 
+                frameBorder="0" 
+                scrolling="no"
+                title="Google Calendar"
+                className="rounded-lg"
+              />
+            </div>
+          </div>
+        ) : (
+          <CalendarTodos 
+            currentDate={currentDate}
+            view={view}
+            onDateChange={setCurrentDate}
+            onProgressUpdate={handleProgressUpdate}
+          />
+        )}
       </div>
 
       {/* Footer with Progress Bar */}
