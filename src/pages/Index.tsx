@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Upload, Clock, BarChart3, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -48,14 +47,14 @@ const Index = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-              <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center overflow-hidden">
+              <div className="h-12 w-12 flex items-center justify-center overflow-hidden">
                 <img 
                   src="/lovable-uploads/b1e02ec5-6a97-4c44-912c-358925786899.png" 
-                  alt="Dood Logo" 
-                  className="h-6 w-6 object-contain"
+                  alt="DOOD? Logo" 
+                  className="h-12 w-12 object-contain"
                 />
               </div>
-              <h1 className="text-2xl font-bold">Dood</h1>
+              <h1 className="text-2xl font-bold">DOOD?</h1>
             </Link>
             <div className="flex items-center space-x-4">
               <Link to="/upload">
