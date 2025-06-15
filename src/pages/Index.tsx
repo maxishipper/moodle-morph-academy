@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Upload, FileText, Brain, MessageSquare, BookOpen, Clock, BarChart3 } from 'lucide-react';
+import { Upload, FileText, Brain, MessageSquare, BookOpen, Clock, BarChart3, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -15,6 +15,7 @@ const Index = () => {
   const [examDate] = useState(new Date('2025-07-15')); // Example exam date
   const [progress, setProgress] = useState(65); // Example progress
   const [timeLeft, setTimeLeft] = useState('');
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Countdown timer
   useEffect(() => {
@@ -43,18 +44,26 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] font-sans">
+    <div className="min-h-screen bg-[#f8f9fa] font-sans relative">
       {/* Header */}
       <header className="bg-[#0f6cbf] text-white shadow-lg">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <BookOpen className="h-8 w-8" />
-              <h1 className="text-2xl font-bold">EduLearn Platform</h1>
+              <h1 className="text-2xl font-bold">Doodle</h1>
             </div>
-            <div className="flex items-center space-x-4 text-sm">
-              <Clock className="h-5 w-5" />
-              <span>Exam in: {timeLeft}</span>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 text-sm">
+                <Clock className="h-5 w-5" />
+                <span>Exam in: {timeLeft}</span>
+              </div>
+              <Button
+                onClick={() => setIsChatOpen(true)}
+                className="bg-white text-[#0f6cbf] hover:bg-gray-100"
+              >
+                Ask Chad
+              </Button>
             </div>
           </div>
         </div>
@@ -68,11 +77,17 @@ const Index = () => {
         </div>
 
         {/* Main Apps Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <QuizApp isEnabled={uploadedFiles.length > 0} />
-          <MockExamApp isEnabled={uploadedFiles.length > 0} />
-          <AnkiCardApp isEnabled={uploadedFiles.length > 0} />
-          <ChatApp isEnabled={uploadedFiles.length > 0} />
+        <div className="space-y-6 mb-8">
+          {/* Quiz App - Full Width */}
+          <div className="w-full">
+            <QuizApp isEnabled={uploadedFiles.length > 0} />
+          </div>
+          
+          {/* Anki Cards and Mock Exam - Side by Side */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <AnkiCardApp isEnabled={uploadedFiles.length > 0} />
+            <MockExamApp isEnabled={uploadedFiles.length > 0} />
+          </div>
         </div>
 
         {/* Progress Section */}
@@ -91,6 +106,43 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Chat Sidebar Overlay */}
+      {isChatOpen && (
+        <div className="fixed inset-0 z-50 flex">
+          {/* Backdrop */}
+          <div 
+            className="flex-1 bg-black bg-opacity-50"
+            onClick={() => setIsChatOpen(false)}
+          />
+          
+          {/* Sidebar */}
+          <div className="w-96 bg-white shadow-xl transform transition-transform duration-300 ease-in-out">
+            <div className="h-full flex flex-col">
+              {/* Header */}
+              <div className="bg-[#0f6cbf] text-white p-4 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <MessageSquare className="h-6 w-6" />
+                  <h3 className="text-lg font-semibold">Chat with Chad</h3>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsChatOpen(false)}
+                  className="text-white hover:bg-white/20"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+              
+              {/* Chat Content */}
+              <div className="flex-1 p-4">
+                <ChatApp isEnabled={uploadedFiles.length > 0} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
